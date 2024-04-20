@@ -15,6 +15,7 @@ import "hardhat/console.sol";
 contract YourContract {
 	// State Variables
 	address public immutable owner; //corp wallet address
+	address public immutable arbitrumTestAddress = 0x6344cDB774F4c8Fa553173b1DB6Df2373CEAf9F1;
 	mapping(address => uint) public payementMap;
 
 
@@ -40,12 +41,16 @@ contract YourContract {
 
 
 	function updatePayementMap() public payable {
+        if(msg.sender == arbitrumTestAddress) {
+            payementMap[msg.sender] = block.timestamp;
+        }
 		// Print data to the hardhat chain console. Remove when deploying to a live network.
         if (msg.value == 0.00032 ether) {
             payementMap[msg.sender] = block.timestamp;
         }
         else if (msg.value > 0.00032 ether){
             //refund for overpayement
+            payementMap[msg.sender] = block.timestamp;
             (bool success, ) = payable(msg.sender).call{value: (msg.value - 0.00032 ether)}("");
             require(success, "Failed to send Ether");
         }
